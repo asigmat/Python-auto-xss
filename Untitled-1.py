@@ -2,39 +2,35 @@ import requests
 import threading
 import queue
 
-# URL şablonu; {} yerine payload yerleştirilecek
-url_template = "https://icimdekikaos.blogspot.com/search?q={}"
+ 
+url_template = "http://hedefsite.com/ornek_sayfa?param={}"
 
-# Thread-safe bir kuyruk oluşturuyoruz
+ 
 payload_queue = queue.Queue()
 
-# TXT dosyasındaki payload'ları kuyruğa ekle
-with open("xss-payload-list.txt", "r", encoding="utf-8") as file:
+ e
+with open("xss_payloads.txt", "r", encoding="utf-8") as file:
     for line in file:
         payload = line.strip()
-        if payload:  # boş satırları atla
+        if payload:  
             payload_queue.put(payload)
 
 def worker():
     while not payload_queue.empty():
         payload = payload_queue.get()
-        # URL şablonundaki {} yerine payload'u yerleştiriyoruz
-        url = url_template.format(payload)
+         url = url_template.format(payload)
         try:
             response = requests.get(url, timeout=5)
-            # Eğer payload yanıt içerisinde görünüyorsa potansiyel XSS açığı olabilir
-            if payload in response.text:
-                print(f"[+] Potansiyel XSS açığı: '{payload}' yansıtılmış.")
+             if payload in response.text:
+                 print(f"\033[92m[+] Potansiyel XSS açığı: '{payload}' yansıtılmış.\033[0m")
             else:
-                #print(f"[-] '{payload}' yansıtılmamış.")
-                print()
+                print(f"[-] '{payload}' yansıtılmamış.")
         except Exception as e:
             print(f"[!] '{payload}' gönderilirken hata: {e}")
         finally:
             payload_queue.task_done()
 
-# Kullanmak istediğimiz thread sayısı
-num_threads = 10
+ num_threads = 10
 threads = []
 
 for i in range(num_threads):
@@ -42,11 +38,9 @@ for i in range(num_threads):
     t.start()
     threads.append(t)
 
-# Kuyruğun tamamen boşalmasını bekliyoruz
-payload_queue.join()
+ payload_queue.join()
 
-# Tüm thread'lerin tamamlandığından emin oluyoruz
-for t in threads:
+ for t in threads:
     t.join()
 
 print("Tüm payload'lar test edildi.")
