@@ -3,7 +3,7 @@ import threading
 import queue
 
  
-url_template = "http://hedefsite.com/ornek_sayfa?param={}"
+url_template = "http://hedefsite.com/ara?param={}"
 
  
 payload_queue = queue.Queue()
